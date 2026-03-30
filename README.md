@@ -1,13 +1,14 @@
 # College_Event_Management_System
 
-##The modular structure of the backend system and the flow of request and response 
+## The modular structure of the backend system and the flow of request and response 
+
 <img width="237" height="492" alt="image" src="https://github.com/user-attachments/assets/6d93b327-15d4-4d57-9e7e-49914301806c" />
 
 Request -> route -> middleware -> controller -> service -> database/utilities -> response.
 
 This floder structure helps us to maintain scalable system, Easier to maintain, Easier for testing and modification, Easier for larger system Understanding
 
-##The purpose of the each folder is 
+## The purpose of the each folder is 
 
 config- this handles the intital setup of the external system when integrated with current project like for example prisma databse orm.
 
