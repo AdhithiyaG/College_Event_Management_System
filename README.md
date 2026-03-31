@@ -22,6 +22,15 @@ services - this handles the business logics whereas the controller handles the b
 
 utils- it implements the reusable helper functions which are not only used by the single app compontent
 
+## Usage of axios design
+
+Why this design is useful:
+
+Single source of truth for API routes.
+Automatic token handling.
+Cleaner React components (components call getAllEvents() instead of writing raw Axios code repeatedly).
+Easier maintenance if backend URL or endpoint paths change.
+
 ## Mental model of the module:
 
 Student endpoints: register, view own registrations, cancel own registration.
