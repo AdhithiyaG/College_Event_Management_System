@@ -21,3 +21,9 @@ routes- This handles the API endpoints of the system where this implements the c
 services - this handles the business logics whereas the controller handles the basics things the services handles the systems larger complex logics like creating users, deleting, databse quering,sending emails.
 
 utils- it implements the reusable helper functions which are not only used by the single app compontent
+
+## Mental model of the module:
+
+Student endpoints: register, view own registrations, cancel own registration.
+Admin endpoints: inspect event registrations, mark attendance.
+QR and email are generated only at registration creation, not during attendance marking.
