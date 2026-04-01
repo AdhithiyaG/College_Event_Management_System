@@ -36,3 +36,9 @@ Easier maintenance if backend URL or endpoint paths change.
 Student endpoints: register, view own registrations, cancel own registration.
 Admin endpoints: inspect event registrations, mark attendance.
 QR and email are generated only at registration creation, not during attendance marking.
+
+## How the QR Attendance module works
+
+So the end-to-end chain is:
+
+Register -> create registration -> generate QR from registrationId -> store QR -> email/render QR -> scan QR -> decode registrationId -> attendance API -> mark attended.
