@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+model User {
+  id            String         @id @default(uuid())
+  name          String
+  email         String         @unique
+  password      String
+  role          Role           @default(STUDENT)
+  department    String?
+  year          Int?
+  createdAt     DateTime       @default(now())
+  registrations Registration[]
+}
+
+model Event {
+  id            String         @id @default(uuid())
+  title         String
+  description   String
+  date          DateTime
+  venue         String
+  capacity      Int
+  imageUrl      String?
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  registrations Registration[]
+}
+
+model Registration {
+  id        String   @id @default(uuid())
+  userId    String
+  eventId   String
+  user      User     @relation(fields: [userId], references: [id])
+  event     Event    @relation(fields: [eventId], references: [id])
+  qrCode    String?
+  attended  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, eventId])
+}

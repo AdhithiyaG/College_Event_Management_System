@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const registrationController_1 = require("../controllers/registrationController");
+const auth_1 = require("../middleware/auth");
+const router = (0, express_1.Router)();
+router.post("/", auth_1.authenticate, registrationController_1.registerForEvent);
+router.get("/my", auth_1.authenticate, registrationController_1.getMyRegistrations);
+router.delete("/:eventId", auth_1.authenticate, registrationController_1.cancel);
+router.post("/attendance", auth_1.authenticate, auth_1.adminOnly, registrationController_1.markAttendance);
+exports.default = router;
