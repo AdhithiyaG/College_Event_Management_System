@@ -318,14 +318,6 @@ VITE_API_BASE_URL=https://<your-render-backend>/api
 
 Then redeploy the frontend so the production build picks up the new API URL.
 
-## Common Interview Talking Points
-
-- The system uses layered architecture to keep business logic isolated from transport logic.
-- Prisma migrations make database changes versioned and repeatable.
-- JWT-based auth keeps the API stateless and scalable.
-- QR attendance reduces manual check-in effort and improves event entry flow.
-- Environment-based configuration supports clean local, staging, and production deployments.
-
 ## Future Improvements
 
 - Email resend queue with background jobs.
