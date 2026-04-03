@@ -1,331 +1,251 @@
-# College Event Management System
+# 🎓 College Event Management System
 
-A full-stack web application for managing college events, registrations, QR-based attendance, and automated confirmation emails. The system is split into a React frontend and an Express + Prisma backend backed by PostgreSQL.
+> A full-stack platform that streamlines college event organization — from discovery to QR-powered check-in.
 
-## Overview
+![Tech Stack](https://img.shields.io/badge/React-Vite-blue?style=flat-square&logo=react)
+![Node](https://img.shields.io/badge/Node.js-Express-green?style=flat-square&logo=node.js)
+![Postgres](https://img.shields.io/badge/PostgreSQL-Prisma-336791?style=flat-square&logo=postgresql)
+![JWT](https://img.shields.io/badge/Auth-JWT-orange?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-purple?style=flat-square)
 
-This project is designed as a production-style system rather than a simple CRUD demo. It demonstrates:
+---
 
-- Role-based authentication with student and admin flows.
-- Event browsing, registration, cancellation, and attendance tracking.
-- QR code generation for check-in.
-- Email confirmation on successful registration.
-- Clean separation of concerns across routes, middleware, controllers, services, and utilities.
+## ✨ What It Does
 
-## Tech Stack
+Students browse and register for college events in seconds. On registration, they receive a **confirmation email with a unique QR code**. At the event, admins scan the QR code with their device camera to mark attendance instantly — no paperwork, no manual lists.
 
-- Frontend: React, Vite, React Router, Axios, Tailwind CSS.
-- Backend: Node.js, Express, TypeScript.
-- Database: PostgreSQL.
-- ORM: Prisma 7 with a PostgreSQL adapter.
-- Authentication: JWT.
-- Email: Nodemailer.
-- QR generation: qrcode.
+---
 
-## System Architecture
+## 🏗️ Architecture
 
-```mermaid
-flowchart LR
-	U[Student / Admin Browser] --> F[React Frontend]
-	F -->|Axios requests| A[Express API]
-	A --> M[Middleware]
-	M --> C[Controllers]
-	C --> S[Services]
-	S --> P[Prisma Client]
-	P --> D[(PostgreSQL / Neon)]
-	S --> E[Email Service]
-	S --> Q[QR Utility]
-	E --> G[Gmail / SMTP]
+```
+┌─────────────────────────────────────────────────────────────┐
+│                        CLIENT LAYER                         │
+│                                                             │
+│   ┌──────────────────┐         ┌──────────────────────┐    │
+│   │   Student View   │         │     Admin View        │    │
+│   │                  │         │                       │    │
+│   │ • Browse Events  │         │ • Dashboard & Stats   │    │
+│   │ • Register       │         │ • Create/Edit Events  │    │
+│   │ • View QR Code   │         │ • QR Camera Scanner   │    │
+│   └────────┬─────────┘         └──────────┬────────────┘   │
+│            │          React + Vite         │                │
+│            └──────────────┬───────────────┘                │
+└───────────────────────────┼─────────────────────────────────┘
+                            │ Axios (REST API)
+┌───────────────────────────┼─────────────────────────────────┐
+│                     API LAYER                               │
+│                                                             │
+│              ┌────────────▼──────────────┐                 │
+│              │    Node.js + Express       │                 │
+│              │                           │                 │
+│              │  /api/auth    → Auth       │                 │
+│              │  /api/events  → Events     │                 │
+│              │  /api/registrations        │                 │
+│              │               → Register  │                 │
+│              │               → Attend    │                 │
+│              └──────┬────────────┬───────┘                 │
+│                     │            │                         │
+│              JWT Middleware   Role Guard                    │
+│              (authenticate)  (STUDENT/ADMIN)               │
+└─────────────────────┼────────────┼─────────────────────────┘
+                      │            │
+┌─────────────────────┼────────────┼─────────────────────────┐
+│                  DATA LAYER      │                          │
+│                                  │                         │
+│   ┌──────────────────┐    ┌──────▼──────────────┐         │
+│   │   PostgreSQL DB   │    │   Nodemailer         │         │
+│   │                  │    │                      │         │
+│   │  Users           │    │  Confirmation Email  │         │
+│   │  Events          │◄───│  + QR Code Attachment│         │
+│   │  Registrations   │    │                      │         │
+│   │                  │    └──────────────────────┘         │
+│   │  (via Prisma ORM)│                                     │
+│   └──────────────────┘                                     │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### Request Lifecycle
+---
 
-```mermaid
-sequenceDiagram
-	participant U as User
-	participant R as React App
-	participant A as Express API
-	participant M as Middleware
-	participant C as Controller
-	participant P as Prisma/Postgres
+## 🔄 Core Flow
 
-	U->>R: Submit login or registration form
-	R->>A: POST /api/auth/register or /api/auth/login
-	A->>M: Authenticate/authorize when needed
-	M->>C: Forward validated request
-	C->>P: Query or create user record
-	P-->>C: Return result
-	C-->>A: JSON response
-	A-->>R: Access token + user data
+```
+Student Registers
+      │
+      ▼
+Check: Event Active? Capacity Available? Already Registered?
+      │
+      ▼
+Create Registration in DB
+      │
+      ▼
+Generate Unique QR Code (registration ID encoded)
+      │
+      ▼
+Send Confirmation Email with QR Code
+      │
+      ▼
+Admin Scans QR at Event → Attendance Marked ✓
 ```
 
-## Folder Structure
+---
 
-### Backend
+## 🚀 Features
 
-```text
-backend/
-	prisma/
-		schema.prisma
-		migrations/
-	src/
-		config/
-		controllers/
-		middleware/
-		routes/
-		services/
-		utils/
-		index.ts
+| Feature | Description |
+|---|---|
+| 🔐 JWT Auth | Access + refresh token flow with role-based access |
+| 📅 Event Management | Admins create, edit, delete events with capacity control |
+| 🎫 Smart Registration | Prevents duplicate registrations, enforces capacity limits |
+| 📷 QR Check-in | Camera-based QR scanning for instant attendance marking |
+| 📧 Email Confirmation | Auto-sent on registration with embedded QR code |
+| 📊 Admin Dashboard | Real-time stats — registrations, capacity, attendance |
+
+---
+
+## 🛠️ Tech Stack
+
+**Frontend**
+- React 18 + Vite
+- React Router DOM
+- Tailwind CSS v3
+- Axios
+- html5-qrcode
+
+**Backend**
+- Node.js + Express
+- TypeScript
+- Prisma ORM
+- PostgreSQL
+- Nodemailer
+- JWT (jsonwebtoken)
+- bcryptjs
+- qrcode
+
+---
+
+## ⚡ Getting Started
+
+### Prerequisites
+- Node.js v18+
+- PostgreSQL
+
+### 1. Clone the repo
+```bash
+git clone https://github.com/yourusername/college-event-management.git
+cd college-event-management
 ```
 
-### Frontend
-
-```text
-frontend/
-	src/
-		components/
-		context/
-		pages/
-		services/
-		App.jsx
-		main.jsx
-```
-
-## Why This Architecture Works
-
-The backend follows a modular design:
-
-```text
-request -> route -> middleware -> controller -> service -> database / utilities -> response
-```
-
-This structure is useful because it keeps authentication, request handling, business logic, and data access separated. That makes the codebase easier to test, extend, and debug.
-
-### Responsibilities by Layer
-
-- `routes`: define API endpoints and connect them to controller functions.
-- `middleware`: handle auth, authorization, and request guards.
-- `controllers`: process request/response flow and coordinate the call chain.
-- `services`: contain reusable business logic such as email delivery.
-- `config`: initialize external systems such as Prisma.
-- `utils`: store helper functions such as QR generation.
-
-## Authentication Flow
-
-```mermaid
-flowchart TD
-	L[Login / Register Form] --> R[Auth Route]
-	R --> C[Auth Controller]
-	C --> D[(User Table)]
-	C --> T[JWT Tokens]
-	T --> F[Stored in localStorage]
-	F --> P[Protected API Calls]
-```
-
-### Auth Behavior
-
-- `register` creates a new student account.
-- `login` validates email and password.
-- JWT access tokens are used for protected routes.
-- Admin users can access event management and attendance views.
-
-## Core Modules
-
-### 1. Authentication
-
-- Student sign-up with name, email, password, department, and year.
-- Login with JWT-based session handling.
-- `/auth/me` route for restoring the logged-in user on page refresh.
-
-### 2. Events
-
-- Students can browse events and view details.
-- Admins can create, update, delete, and manage events.
-- Event visibility is controlled through `isActive`.
-
-### 3. Registrations
-
-- Students can register for events.
-- Duplicate registration is blocked.
-- Capacity checks prevent overbooking.
-- Users can cancel upcoming registrations.
-
-### 4. QR Attendance
-
-- A QR code is generated from the registration ID.
-- The QR code is stored against the registration record.
-- Admins can scan and mark attendance from the QR-derived registration ID.
-
-### 5. Email Notifications
-
-- Registration confirmation emails are sent after successful registration.
-- Emails include event details and the QR code image.
-
-## QR Attendance Flow
-
-```mermaid
-flowchart LR
-	A[Student registers] --> B[Create registration row]
-	B --> C[Generate QR from registrationId]
-	C --> D[Store QR in database]
-	D --> E[Send confirmation email]
-	E --> F[Admin scans QR at venue]
-	F --> G[Extract registrationId]
-	G --> H[Mark attendance]
-```
-
-## Frontend Data Strategy
-
-The frontend uses a central Axios instance in `frontend/src/services/api.js` so every request shares the same base URL and token logic.
-
-Why this pattern helps:
-
-- One source of truth for the API base URL.
-- Automatic token attachment for protected requests.
-- Cleaner React pages and components.
-- Easy environment-based deployment with `VITE_API_BASE_URL`.
-
-## API Endpoints
-
-### Auth
-
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `GET /api/auth/me`
-
-### Events
-
-- `GET /api/events`
-- `GET /api/events/:id`
-- `POST /api/events`
-- `PUT /api/events/:id`
-- `DELETE /api/events/:id`
-- `GET /api/events/admin/all`
-
-### Registrations
-
-- `POST /api/registrations/register`
-- `GET /api/registrations/my-registrations`
-- `DELETE /api/registrations/:id`
-- `GET /api/registrations/event/:eventId`
-- `POST /api/registrations/attendance`
-
-## Database Model
-
-The Prisma schema models three core entities:
-
-- `User`: students and admins.
-- `Event`: event metadata and capacity.
-- `Registration`: join table between users and events with attendance and QR fields.
-
-### Relationship Summary
-
-```mermaid
-erDiagram
-	User ||--o{ Registration : registers
-	Event ||--o{ Registration : has
-
-	User {
-		string id
-		string name
-		string email
-		string password
-		Role role
-		string department
-		int year
-	}
-
-	Event {
-		string id
-		string title
-		string description
-		datetime date
-		string venue
-		int capacity
-		boolean isActive
-	}
-
-	Registration {
-		string id
-		string userId
-		string eventId
-		string qrCode
-		boolean attended
-	}
-```
-
-## Environment Variables
-
-### Backend
-
-- `PORT` - server port.
-- `DATABASE_URL` - PostgreSQL connection string.
-- `JWT_SECRET` - token signing secret.
-- `EMAIL_USER` - sender email address.
-- `EMAIL_PASS` - email app password.
-
-### Frontend
-
-- `VITE_API_BASE_URL` - deployed backend API base URL.
-
-## Local Development
-
-### Backend
-
+### 2. Set up the backend
 ```bash
 cd backend
 npm install
-npx prisma generate
+```
+
+Create `.env`:
+```env
+PORT=5000
+DATABASE_URL="postgresql://user:password@localhost:5432/collegeevents"
+JWT_SECRET=your_secret_key
+EMAIL_USER=your_gmail@gmail.com
+EMAIL_PASS=your_gmail_app_password
+```
+
+Run migrations and start:
+```bash
 npx prisma migrate dev
 npm run dev
 ```
 
-### Frontend
-
+### 3. Set up the frontend
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-## Production Deployment
+Visit `http://localhost:5173`
 
-### Backend on Render
+---
 
-Use `backend` as the root directory.
+## 📁 Project Structure
 
-Build command:
-
-```bash
-npm install && npx prisma generate --schema=prisma/schema.prisma && npx prisma migrate deploy --schema=prisma/schema.prisma && npm run build
+```
+college-event-management/
+├── backend/
+│   ├── src/
+│   │   ├── controllers/     # Auth, Event, Registration logic
+│   │   ├── routes/          # API route definitions
+│   │   ├── middleware/       # JWT auth + role guards
+│   │   ├── services/        # Email service
+│   │   ├── utils/           # QR code generator
+│   │   └── config/          # Prisma client
+│   └── prisma/
+│       └── schema.prisma    # DB schema
+│
+└── frontend/
+    └── src/
+        ├── pages/           # Login, Register, Events, Admin
+        ├── components/      # Navbar, EventCard, QRScanner
+        ├── context/         # Auth context
+        └── services/        # Axios API calls
 ```
 
-Start command:
+---
 
-```bash
-npm run start
+## 🗄️ Database Schema
+
+```
+User ──────────────── Registration ──────────────── Event
+ id                       id                          id
+ name                     userId (FK)                 title
+ email                    eventId (FK)                description
+ password                 qrCode                      date
+ role (STUDENT/ADMIN)     attended                    venue
+ department               createdAt                   capacity
+ year                                                 isActive
 ```
 
-Set backend environment variables in Render, especially `DATABASE_URL` pointing to Neon.
+> `@@unique([userId, eventId])` — prevents duplicate registrations at the DB level.
 
-### Frontend on Vercel or Netlify
+---
 
-Set:
+## 🔑 API Reference
 
-```bash
-VITE_API_BASE_URL=https://<your-render-backend>/api
-```
+### Auth
+| Method | Endpoint | Access |
+|---|---|---|
+| POST | `/api/auth/register` | Public |
+| POST | `/api/auth/login` | Public |
+| GET | `/api/auth/me` | Authenticated |
 
-Then redeploy the frontend so the production build picks up the new API URL.
+### Events
+| Method | Endpoint | Access |
+|---|---|---|
+| GET | `/api/events` | Public |
+| GET | `/api/events/:id` | Public |
+| POST | `/api/events` | Admin |
+| PUT | `/api/events/:id` | Admin |
+| DELETE | `/api/events/:id` | Admin |
 
-## Future Improvements
+### Registrations
+| Method | Endpoint | Access |
+|---|---|---|
+| POST | `/api/registrations/register` | Student |
+| GET | `/api/registrations/my-registrations` | Student |
+| DELETE | `/api/registrations/:id` | Student |
+| GET | `/api/registrations/event/:eventId` | Admin |
+| POST | `/api/registrations/attendance` | Admin |
 
-- Email resend queue with background jobs.
-- Event search and filtering by date, department, and capacity.
-- Audit logs for admin actions.
-- Dashboard analytics for registrations and attendance trends.
-- WebSocket-based live attendance count updates.
+---
 
-## Project Summary
+## 👤 Author
 
-This project demonstrates a real-world full-stack architecture with authentication, role-based access, event operations, automated QR generation, and production deployment readiness. It is a strong example of how to structure a maintainable and scalable application.
+**Adhithiya G** — AI & Data Science, Batch 2023–2027
+
+[![GitHub](https://img.shields.io/badge/GitHub-yourusername-black?style=flat-square&logo=github)](https://github.com/yourusername)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Adhithiya-blue?style=flat-square&logo=linkedin)](https://linkedin.com/in/yourprofile)
+
+---
+
+> Built as a portfolio project to demonstrate full-stack development with real-world features like QR-based attendance, JWT auth, and role-based access control.
