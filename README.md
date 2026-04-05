@@ -238,14 +238,3 @@ User ──────────────── Registration ────�
 | POST | `/api/registrations/attendance` | Admin |
 
 ---
-
-## 👤 Author
-
-**Adhithiya G** — AI & Data Science, Batch 2023–2027
-
-[![GitHub](https://img.shields.io/badge/GitHub-yourusername-black?style=flat-square&logo=github)](https://github.com/yourusername)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Adhithiya-blue?style=flat-square&logo=linkedin)](https://linkedin.com/in/yourprofile)
-
----
-
-> Built as a portfolio project to demonstrate full-stack development with real-world features like QR-based attendance, JWT auth, and role-based access control.
