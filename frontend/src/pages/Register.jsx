@@ -25,10 +25,11 @@ const Register = () => {
     setError("");
     setLoading(true);
     try {
-      const res = await registerUser({
+      const payload = {
         ...formData,
-        year: parseInt(formData.year),
-      });
+        year: formData.year ? parseInt(formData.year, 10) : undefined,
+      };
+      const res = await registerUser(payload);
       login(res.data.accessToken, res.data.user);
       navigate("/events");
     } catch (err) {
