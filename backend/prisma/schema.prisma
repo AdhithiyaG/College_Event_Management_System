@@ -42,7 +42,7 @@ model Registration {
   eventId   String
   user      User     @relation(fields: [userId], references: [id])
   event     Event    @relation(fields: [eventId], references: [id])
-  qrCode    String?
+  qrCode    String?  @db.Text
   attended  Boolean  @default(false)
   createdAt DateTime @default(now())
 
