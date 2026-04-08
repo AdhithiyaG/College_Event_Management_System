@@ -1,15 +1,24 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!databaseUrl) {
   throw new Error("DATABASE_URL is not set in environment variables.");
 }
-const pool = new Pool({ connectionString: databaseUrl });
-const adapter = new PrismaPg(pool);
+
+const parsedDatabaseUrl = new URL(databaseUrl);
+const adapter = new PrismaMariaDb({
+  host: parsedDatabaseUrl.hostname,
+  port: parsedDatabaseUrl.port ? Number(parsedDatabaseUrl.port) : 3306,
+  user: decodeURIComponent(parsedDatabaseUrl.username),
+  password: decodeURIComponent(parsedDatabaseUrl.password),
+  database: parsedDatabaseUrl.pathname.replace(/^\//, ""),
+  // Required by some managed MySQL providers that use caching_sha2_password.
+  allowPublicKeyRetrieval: true,
+  connectTimeout: 10000,
+});
 
 const prisma = new PrismaClient({
   adapter,

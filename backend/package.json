@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
-    "@prisma/adapter-pg": "^7.5.0",
+    "@prisma/adapter-mariadb": "^7.6.0",
     "@prisma/client": "^7.5.0",
     "accepts": "^2.0.0",
     "acorn": "^8.16.0",
@@ -235,7 +235,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --exec ts-node src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "create:admin": "ts-node src/scripts/create-admin.ts",
+    "check:admin": "ts-node src/scripts/check-admin.ts",
+    "check:db": "ts-node src/scripts/check-db.ts",
+    "db:seed": "prisma db seed",
+    "db:deploy": "prisma migrate deploy && prisma db seed"
+  },
+  "prisma": {
+    "seed": "ts-node src/scripts/prisma-seed.ts"
   },
   "keywords": [],
   "author": "",
