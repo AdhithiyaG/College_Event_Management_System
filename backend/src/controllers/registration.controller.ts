@@ -96,7 +96,27 @@ export const getMyRegistrations = async (req: AuthRequest, res: Response) => {
       orderBy: { createdAt: "desc" },
     });
 
-    res.json({ registrations });
+    const registrationsWithQr = await Promise.all(
+      registrations.map(async (registration) => {
+        if (registration.qrCode) {
+          return registration;
+        }
+
+        const generatedQr = await generateQRCode(registration.id);
+
+        await prisma.registration.update({
+          where: { id: registration.id },
+          data: { qrCode: generatedQr },
+        });
+
+        return {
+          ...registration,
+          qrCode: generatedQr,
+        };
+      }),
+    );
+
+    res.json({ registrations: registrationsWithQr });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
