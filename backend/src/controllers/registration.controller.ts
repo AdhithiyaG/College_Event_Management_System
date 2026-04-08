@@ -59,18 +59,20 @@ export const registerForEvent = async (req: AuthRequest, res: Response) => {
       data: { qrCode },
     });
 
-    // Send confirmation email
-    await sendRegistrationConfirmation(
+    // Send confirmation email in background so registration does not hang if SMTP is slow.
+    void sendRegistrationConfirmation(
       registration.user.email,
       registration.user.name,
       registration.event.title,
       registration.event.date,
       registration.event.venue,
       qrCode,
-    );
+    ).catch((emailError) => {
+      console.error("Registration email failed:", emailError);
+    });
 
     res.status(201).json({
-      message: "Registered successfully. Confirmation email sent.",
+      message: "Registered successfully.",
       registration: {
         id: registration.id,
         event: registration.event,
